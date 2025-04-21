@@ -11,7 +11,8 @@ class Activity(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+    last_executed = db.Column(db.DateTime)  # Data/hora da última execução
+    executions_today = db.Column(db.Integer, default=0)  # Contador de execuções hoje
     # Relacionamentos (todos usando back_populates)
     category = db.relationship('Category', back_populates='activities')
     user = db.relationship('User', back_populates='activities')

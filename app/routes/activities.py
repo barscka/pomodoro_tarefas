@@ -1,4 +1,7 @@
+from datetime import datetime, date
 from flask import Blueprint, request, jsonify
+from sqlalchemy import func
+import random
 from app.models.activity import Activity
 from app.models.category import Category
 from app.models.user import User
@@ -95,3 +98,68 @@ def activity_operations(activity_id):
         db.session.delete(activity)
         db.session.commit()
         return jsonify({'message': 'Activity deleted successfully'})
+    
+    
+@activities_bp.route('/random', methods=['GET'])
+def get_random_activity():
+    today = date.today()
+    
+    # Consulta para atividades não executadas hoje
+    subquery = db.session.query(
+        Activity.category_id,
+        func.count(Activity.id).label('cat_count')
+    ).filter(
+        func.date(Activity.last_executed) == today
+    ).group_by(
+        Activity.category_id
+    ).subquery()
+
+    available_activities = Activity.query.filter(
+        (func.date(Activity.last_executed) != today) | 
+        (Activity.last_executed.is_(None))
+    ).outerjoin(
+        subquery, Activity.category_id == subquery.c.category_id
+    ).filter(
+        (subquery.c.cat_count < 2) | 
+        (subquery.c.cat_count.is_(None))
+    ).all()
+
+    if not available_activities:
+        return jsonify({'error': 'No activities available today'}), 404
+    print(available_activities)
+    selected = random.choice(available_activities)
+    
+    # Atualiza registro
+    selected.last_executed = datetime.now()
+    selected.executions_today += 1
+    db.session.commit()
+
+    return jsonify({
+        'id': selected.id,
+        'name': selected.name,
+        'duration': 60,
+        'preparation_time': 5,
+        'category': selected.category.name
+    })
+
+@activities_bp.route('/<int:activity_id>/complete', methods=['POST'])
+def complete_activity(activity_id):
+    activity = Activity.query.get_or_404(activity_id)
+    
+    # Cria registro no histórico
+    history = History(
+        activity_id=activity.id,
+        user_id=1,  # Substituir por current_user.id quando tiver autenticação
+        start_time=datetime.now() - timedelta(minutes=65),
+        end_time=datetime.now(),
+        duration=60,
+        notes=request.json.get('notes', '')
+    )
+    
+    db.session.add(history)
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'Activity completed successfully',
+        'activity_id': activity.id
+    })
