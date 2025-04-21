@@ -1,4 +1,4 @@
-from app import db
+from app.extensions import db
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -10,9 +10,10 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    activities = db.relationship('Activity', backref='user', lazy=True)
-    schedules = db.relationship('Schedule', backref='user', lazy=True)
-    histories = db.relationship('History', backref='user', lazy=True)
+    # Relacionamentos (usando back_populates)
+    activities = db.relationship('Activity', back_populates='user', lazy=True)
+    schedules = db.relationship('Schedule', back_populates='user', lazy=True)
+    histories = db.relationship('History', back_populates='user', lazy=True)
 
     def __repr__(self):
         return f'<User {self.username}>'

@@ -11,8 +11,9 @@ class Schedule(db.Model):
     completed = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    activity = db.relationship('Activity', backref='schedules')
-    user = db.relationship('User', backref='schedules')
+    # Relacionamentos (usando back_populates)
+    activity = db.relationship('Activity', back_populates='schedules')
+    user = db.relationship('User', back_populates='schedules')
     
     def __repr__(self):
         return f'<Schedule {self.id} for {self.scheduled_date}>'

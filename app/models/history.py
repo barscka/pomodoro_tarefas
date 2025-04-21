@@ -12,8 +12,8 @@ class History(db.Model):
     duration = db.Column(db.Integer)  # Em minutos
     notes = db.Column(db.Text)
     
-    activity = db.relationship('Activity', backref='histories')
-    user = db.relationship('User', backref='histories')
+    activity = db.relationship('Activity', back_populates='histories')
+    user = db.relationship('User', back_populates='histories')
     
     def __repr__(self):
         return f'<History {self.id} of {self.activity_id}>'

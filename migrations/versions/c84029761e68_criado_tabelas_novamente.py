@@ -1,8 +1,8 @@
-"""Initial models
+"""criado tabelas novamente
 
-Revision ID: 98c29934fa34
+Revision ID: c84029761e68
 Revises: 
-Create Date: 2025-04-21 13:46:36.366184
+Create Date: 2025-04-21 15:03:31.739615
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '98c29934fa34'
+revision = 'c84029761e68'
 down_revision = None
 branch_labels = None
 depends_on = None

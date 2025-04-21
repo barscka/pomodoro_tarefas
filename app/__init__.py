@@ -1,8 +1,12 @@
 from flask import Flask
+from app.routes.api import api_bp
+
 from dotenv import load_dotenv
 import os
 from app.extensions import db, migrate  # Importe de extensions
-
+# Registre blueprints (importe dentro da função para evitar circular imports)
+from app.routes.main_routes import bp as main_bp
+from app.routes.activities import activities_bp
 load_dotenv()
 
 def create_app():
@@ -17,11 +21,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Registre blueprints (importe dentro da função para evitar circular imports)
-    from app.routes.main_routes import bp as main_bp
-    from app.routes.activities import bp as activities_bp
+
     
     app.register_blueprint(main_bp)
-    app.register_blueprint(activities_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
