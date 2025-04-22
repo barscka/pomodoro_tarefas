@@ -6,10 +6,12 @@ from app.models.activity import Activity
 from app.models.category import Category
 from app.models.user import User
 from app.extensions import db
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 activities_bp = Blueprint('activities', __name__)
 
 @activities_bp.route('/', methods=['GET'])
+@jwt_required()
 def get_activities():
     activities = Activity.query.all()
     return jsonify([{
@@ -23,6 +25,7 @@ def get_activities():
     } for act in activities])
 
 @activities_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_activity():
     data = request.get_json()
     
@@ -60,6 +63,7 @@ def create_activity():
     }), 201
 
 @activities_bp.route('/<int:activity_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def activity_operations(activity_id):
     activity = Activity.query.get_or_404(activity_id)
     
@@ -101,6 +105,7 @@ def activity_operations(activity_id):
     
     
 @activities_bp.route('/random', methods=['GET'])
+@jwt_required()
 def get_random_activity():
     today = date.today()
     
@@ -143,6 +148,7 @@ def get_random_activity():
     })
 
 @activities_bp.route('/<int:activity_id>/complete', methods=['POST'])
+@jwt_required()
 def complete_activity(activity_id):
     activity = Activity.query.get_or_404(activity_id)
     

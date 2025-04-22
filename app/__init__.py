@@ -3,7 +3,7 @@ from app.routes.api import api_bp
 
 from dotenv import load_dotenv
 import os
-from app.extensions import db, migrate  # Importe de extensions
+from app.extensions import db, migrate, jwt
 # Registre blueprints (importe dentro da função para evitar circular imports)
 from app.routes.main_routes import bp as main_bp
 from app.routes.activities import activities_bp
@@ -20,6 +20,7 @@ def create_app():
     # Inicialize extensões
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
 
 
     

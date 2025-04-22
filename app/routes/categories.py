@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from app.models.category import Category
 from app.extensions import db
-
+from flask_jwt_extended import jwt_required, get_jwt_identity
 categories_bp = Blueprint('categories', __name__)
 
 @categories_bp.route('/', methods=['GET'])
+@jwt_required()
 def get_categories():
     categories = Category.query.all()
     return jsonify([{
@@ -15,6 +16,7 @@ def get_categories():
     } for cat in categories])
 
 @categories_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_category():
     data = request.get_json()
     
@@ -41,6 +43,7 @@ def create_category():
     }), 201
 
 @categories_bp.route('/<int:category_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def category_operations(category_id):
     category = Category.query.get_or_404(category_id)
     
